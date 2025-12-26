@@ -1,0 +1,41 @@
+---
+# Test profile
+"%test":
+  quarkus:
+    datasource:
+      db-kind: h2
+      jdbc:
+        url: jdbc:h2:mem:testdb
+    hibernate-orm:
+      database:
+        generation: drop-and-create
+    rest-client:
+      account-service:
+        url: http://localhost:8082
+      customer-service:
+        url: http://localhost:8081
+  # Disable JWT for tests
+  mp:
+    jwt:
+      verify:
+        enabled: false
+    messaging:
+      outgoing:
+        transactions-completed:
+          connector: smallrye-in-memory
+        transactions-failed:
+          connector: smallrye-in-memory
+
+
+
+
+
+
+
+
+
+
+
+
+
+

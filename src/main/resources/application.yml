@@ -1,0 +1,97 @@
+# Database configuration
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: transaction_user
+    password: transaction_password
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/transaction_db
+
+  # Hibernate ORM configuration
+  hibernate-orm:
+    database:
+      generation: update
+    log:
+      sql: true
+
+  # HTTP configuration
+  http:
+    port: 8083
+    cors:
+      ~: true
+      origins: "*"
+      headers: "*"
+      methods: "*"
+
+  # Health check configuration
+  smallrye-health:
+    ui:
+      always-include: true
+
+  # Logging configuration
+  log:
+    level: INFO
+    category:
+      "com.bank.transaction":
+        level: DEBUG
+
+  # Metrics configuration
+  micrometer:
+    export:
+      prometheus:
+        enabled: true
+        path: /q/metrics
+
+  # Application configuration
+  application:
+    name: transaction-service
+    version: 1.0.0-SNAPSHOT
+
+  # JWT configuration
+  smallrye-jwt:
+    enabled: true
+
+  # REST Client configuration
+  rest-client:
+    account-service:
+      url: ${ACCOUNT_SERVICE_URL:http://localhost:8082}
+    customer-service:
+      url: ${CUSTOMER_SERVICE_URL:http://localhost:8081}
+
+# Kafka configuration
+kafka:
+  bootstrap:
+    servers: localhost:9092
+
+# MicroProfile configuration
+mp:
+  jwt:
+    verify:
+      publickey:
+        location: META-INF/resources/publicKey.pem
+      issuer: https://banking.local
+  messaging:
+    outgoing:
+      transactions-completed:
+        connector: smallrye-kafka
+        topic: transactions.completed
+        value:
+          serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+      transactions-failed:
+        connector: smallrye-kafka
+        topic: transactions.failed
+        value:
+          serializer: io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+
+---
+# Dev profile
+"%dev":
+  quarkus:
+    datasource:
+      jdbc:
+        url: jdbc:postgresql://localhost:5432/transaction_db
+    hibernate-orm:
+      database:
+        generation: drop-and-create
+
+
